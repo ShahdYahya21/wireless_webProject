@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wireless Network Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .scenarios {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .scenario-card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid #3498db;
+        }
+
+        .scenario-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .scenario-card h3 {
+            color: #2c3e50;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+        }
+
+        .scenario-card p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .scenario-card ul {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .scenario-card ul li {
+            color: #555;
+            padding: 3px 0;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .scenario-card ul li:before {
+            content: "•";
+            color: #3498db;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+        }
+
+        .icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .scenarios {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Wireless Network Calculator</h1>
+            <p>Professional network design and analysis tool</p>
+        </div>
+
+        <div class="scenarios">
+            <div class="scenario-card">
+                <span class="icon">📡</span>
+                <h3>Wireless Communication System</h3>
+                <p>Analyze data rates through each processing stage of a wireless communication chain.</p>
+                <ul>
+                    <li>Sampler rate calculation</li>
+                    <li>Quantizer output analysis</li>
+                    <li>Source & channel encoding rates</li>
+                    <li>Interleaver and burst formatting</li>
+                </ul>
+                <button class="btn" onclick="window.location.href='part1.html'">Start Analysis</button>
+            </div>
+
+            <div class="scenario-card">
+                <span class="icon">📊</span>
+                <h3>OFDM Systems</h3>
+                <p>Calculate data rates and spectral efficiency for OFDM-based communication systems.</p>
+                <ul>
+                    <li>Resource element data rates</li>
+                    <li>OFDM symbol calculations</li>
+                    <li>Resource block analysis</li>
+                    <li>Spectral efficiency optimization</li>
+                </ul>
+                <button class="btn" onclick="window.location.href='part2.html'">Calculate OFDM</button>
+
+            </div>
+
+            <div class="scenario-card">
+                <span class="icon">📶</span>
+                <h3>Link Budget Calculation</h3>
+                <p>Compute transmission power and received signal strength for wireless links.</p>
+                <ul>
+                    <li>Path loss calculations</li>
+                    <li>Transmitter power analysis</li>
+                    <li>Receiver sensitivity</li>
+                    <li>Flat environment modeling</li>
+                </ul>
+                <button class="btn" onclick="window.location.href='part3.html'">Calculate Link Budget</button>
+
+            </div>
+
+            <div class="scenario-card">
+                <span class="icon">🗼</span>
+                <h3>Cellular System Design</h3>
+                <p>Design cellular networks based on coverage, capacity, and user requirements.</p>
+                <ul>
+                    <li>Cell capacity planning</li>
+                    <li>Coverage area calculations</li>
+                    <li>Frequency reuse analysis</li>
+                    <li>Network optimization</li>
+                </ul>
+                <button class="btn" onclick="window.location.href='part4.html'">Design Network</button>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>
