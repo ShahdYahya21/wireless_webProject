@@ -1,80 +1,92 @@
+let lastCalculation = null;
+
 function calculate() {
-    // Get input values
-    let bandwidth = parseFloat(document.getElementById('bandwidth').value);
-    const bandwidthUnit = document.getElementById('bandwidthUnit').value;
-    const quantizerBits = parseInt(document.getElementById('quantizerBits').value);
-    const sourceEncoderRate = parseFloat(document.getElementById('sourceEncoderRate').value);
-    const channelEncoderRate = parseFloat(document.getElementById('channelEncoderRate').value);
-    const interleaverBits = parseInt(document.getElementById('interleaverBits').value);
+  const bandwidth = parseFloat(document.getElementById('bandwidth').value);
+  const quantizerBits = parseInt(document.getElementById('quantizerBits').value);
+  const sourceEncoderRate = parseFloat(document.getElementById('sourceEncoderRate').value);
+  const channelEncoderRate = parseFloat(document.getElementById('channelEncoderRate').value);
+  const payloadToOverheadRatio = parseFloat(document.getElementById('payloadToOverheadRatio').value);
 
-    // Convert bandwidth to Hz if necessary
-    if (bandwidthUnit === 'kHz') {
-        bandwidth *= 1000;
+  if (
+    isNaN(bandwidth) ||
+    isNaN(quantizerBits) ||
+    isNaN(sourceEncoderRate) ||
+    isNaN(channelEncoderRate) ||
+    isNaN(payloadToOverheadRatio) ||
+    payloadToOverheadRatio <= 0
+  ) {
+    document.getElementById('resultContent').innerHTML =
+      "<p class='result-item'><span class='result-value'>Please fill in all fields with valid positive numbers.</span></p>";
+    lastCalculation = null;
+    return;
+  }
+
+  const samplingFrequency = 2 * bandwidth;
+  const inputRate = samplingFrequency * quantizerBits;
+  const sourceEncoderOutput = inputRate * sourceEncoderRate;
+  const channelEncoderOutput = sourceEncoderOutput / channelEncoderRate;
+
+  // Burst rate calculation explained in ratio comments
+  const burstRate = channelEncoderOutput * (1 + 1 / payloadToOverheadRatio);
+
+  const resultsHTML = `
+    <p class="result-item">Sampling Frequency: <span class="result-value">${samplingFrequency.toLocaleString()} Hz</span></p>
+    <p class="result-item">Bit Rate after Source Encoder: <span class="result-value">${sourceEncoderOutput.toLocaleString()} bps</span></p>
+    <p class="result-item">Bit Rate after Channel Encoder: <span class="result-value">${channelEncoderOutput.toLocaleString()} bps</span></p>
+    <p class="result-item">Bit Rate after Burst Formatting: <span class="result-value">${burstRate.toLocaleString()} bps</span></p>
+  `;
+
+  document.getElementById('resultContent').innerHTML = resultsHTML;
+
+  lastCalculation = {
+    parameters: {
+      bandwidth,
+      quantizerBits,
+      sourceEncoderRate,
+      channelEncoderRate,
+      payloadToOverheadRatio,
+    },
+    results: {
+      samplingFrequency,
+      sourceEncoderOutput,
+      channelEncoderOutput,
+      burstRate,
     }
-
-    // Perform calculations
-    const samplingFrequency = 2 * bandwidth;
-    const quantizationLevels = Math.pow(2, quantizerBits);
-    const inputRate = samplingFrequency * quantizerBits;
-    const sourceEncoderOutput = inputRate * sourceEncoderRate;
-    const channelEncoderOutput = sourceEncoderOutput / channelEncoderRate;
-    const interleaverOutput = channelEncoderOutput;
-
-    // Display results
-    document.getElementById('resultContent').innerHTML = `
-        <p class="result-item" onclick="toggleUnit(this, ${samplingFrequency}, 'Hz')">Sampling Frequency: <span class="answer">${samplingFrequency.toLocaleString()} Hz</span></p>
-        <p class="result-item">Number of Quantization Levels: <span class="answer">${quantizationLevels}</span></p>
-        <p class="result-item" onclick="toggleUnit(this, ${sourceEncoderOutput}, 'bps')">Bit Rate at Source Encoder Output: <span class="answer">${sourceEncoderOutput.toLocaleString()} bps</span></p>
-        <p class="result-item" onclick="toggleUnit(this, ${channelEncoderOutput}, 'bps')">Bit Rate at Channel Encoder Output: <span class="answer">${channelEncoderOutput.toLocaleString()} bps</span></p>
-        <p class="result-item" onclick="toggleUnit(this, ${interleaverOutput}, 'bps')">Bit Rate at Interleaver Output: <span class="answer">${interleaverOutput.toLocaleString()} bps</span></p>
-    `;
+  };
 }
 
-function toggleUnit(element, value, unit) {
-    let newValue;
-    let newUnit;
+async function explainResults() {
+  if (!lastCalculation) {
+    alert('Please perform a calculation first!');
+    return;
+  }
 
-    switch(unit) {
-        case 'Hz':
-            newValue = value / 1000;
-            newUnit = 'kHz';
-            break;
-        case 'kHz':
-            newValue = value * 1000;
-            newUnit = 'Hz';
-            break;
-        case 'bps':
-            if (value >= 1e9) {
-                newValue = value / 1e9;
-                newUnit = 'Gbps';
-            } else if (value >= 1e6) {
-                newValue = value / 1e6;
-                newUnit = 'Mbps';
-            } else if (value >= 1e3) {
-                newValue = value / 1e3;
-                newUnit = 'kbps';
-            } else {
-                newValue = value;
-                newUnit = 'bps';
-            }
-            break;
-        case 'Gbps':
-            newValue = value * 1e9;
-            newUnit = 'bps';
-            break;
-        case 'Mbps':
-            newValue = value * 1e6;
-            newUnit = 'bps';
-            break;
-        case 'kbps':
-            newValue = value * 1e3;
-            newUnit = 'bps';
-            break;
-        default:
-            newValue = value;
-            newUnit = unit;
-    }
+  document.getElementById('resultContent').innerHTML += `
+    <p style="color: #3498db; font-style: italic;">Generating AI explanation...</p>
+  `;
 
-    element.innerHTML = `${element.innerHTML.split(':')[0]}: <span class="answer">${newValue.toLocaleString()} ${newUnit}</span>`;
-    element.setAttribute('onclick', `toggleUnit(this, ${newValue}, '${newUnit}')`);
+  try {
+    const response = await fetch('http://localhost:3000/explain', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(lastCalculation),
+    });
+
+    const data = await response.json();
+
+    // Remove loading text
+    const contentDiv = document.getElementById('resultContent');
+    contentDiv.innerHTML = contentDiv.innerHTML.replace(/<p style="color: #3498db; font-style: italic;">.*?<\/p>/, '');
+
+    // Append explanation
+    contentDiv.innerHTML += `
+      <div style="margin-top:20px; padding: 15px; background: #eaf4fb; border-radius: 8px;">
+        <h3>AI Explanation:</h3>
+        <p>${data.explanation.replace(/\n/g, '<br>')}</p>
+      </div>
+    `;
+  } catch (error) {
+    alert('Failed to get AI explanation. See console for details.');
+    console.error(error);
+  }
 }
