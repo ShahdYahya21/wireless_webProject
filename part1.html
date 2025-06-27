@@ -2,161 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Wireless Communication System</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f5f5f5;
-      color: #333;
-      line-height: 1.6;
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    .header {
-      text-align: center;
-      margin-bottom: 40px;
-      background: white;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-
-    .header h1 {
-      color: #2c3e50;
-      font-size: 2.5em;
-      margin-bottom: 10px;
-    }
-
-    .header p {
-      color: #666;
-      font-size: 1.1em;
-    }
-
-    .card {
-      background: white;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      margin-bottom: 30px;
-    }
-
-    h2 {
-      color: #2c3e50;
-      margin-bottom: 20px;
-      font-size: 1.8em;
-      text-align: center;
-    }
-
-    .input-group {
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: #444;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 12px 15px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 1em;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-
-    input:focus, select:focus {
-      border-color: #3498db;
-      box-shadow: 0 0 8px rgba(52, 152, 219, 0.2);
-      outline: none;
-    }
-
-    .input-with-unit {
-      display: flex;
-      gap: 10px;
-    }
-
-    button, .btn {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 6px;
-      background-color: #3498db;
-      color: white;
-      font-size: 1.1em;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.2s, transform 0.2s;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-    }
-
-    button:hover, .btn:hover {
-      background-color: #2980b9;
-      transform: translateY(-2px);
-    }
-
-    .note {
-      font-size: 14px;
-      color: #666;
-      margin-top: 15px;
-      line-height: 1.4;
-      text-align: center;
-    }
-
-    .image-container {
-      margin-top: 30px;
-      text-align: center;
-    }
-
-    #resultImage {
-      max-width: 90%;
-      height: auto;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    .back-container {
-      text-align: center;
-      margin-top: 30px;
-    }
-  </style>
+  <link rel="stylesheet" href="part1.css" />
 </head>
 <body>
   <div class="container">
     <div class="header">
       <h1>Wireless Communication System</h1>
-      <p>Analyze data rates through each processing stage of a wireless communication chain</p>
+      <p>Analyze data rates through each stage of a wireless communication system</p>
     </div>
 
-    <!-- Calculator -->
     <div class="card">
-      <h2>Digital Communication System Calculator</h2>
-      <form id="calcForm">
+      <h2>Digital Communication Calculator</h2>
+      <form id="calcForm" onsubmit="return false;">
         <div class="input-group">
-          <label for="bandwidth">Bandwidth:</label>
-          <div class="input-with-unit">
-            <input type="number" id="bandwidth" placeholder="Enter bandwidth" />
-            <select id="bandwidthUnit">
-              <option value="Hz">Hz</option>
-              <option value="kHz">kHz</option>
-            </select>
-          </div>
+          <label for="bandwidth">Bandwidth (Hz):</label>
+          <input type="number" id="bandwidth" placeholder="Enter bandwidth in Hz" />
         </div>
 
         <div class="input-group">
@@ -166,40 +28,34 @@
 
         <div class="input-group">
           <label for="sourceEncoderRate">Source encoder rate:</label>
-          <input type="number" step="0.01" id="sourceEncoderRate" placeholder="Enter source encoder rate" />
+          <input type="number" step="0.01" id="sourceEncoderRate" placeholder="e.g., 0.8" />
         </div>
 
         <div class="input-group">
           <label for="channelEncoderRate">Channel encoder rate:</label>
-          <input type="number" step="0.01" id="channelEncoderRate" placeholder="Enter channel encoder rate" />
+          <input type="number" step="0.01" id="channelEncoderRate" placeholder="e.g., 0.7" />
         </div>
 
         <div class="input-group">
-          <label for="interleaverBits">Interleaver number of bits:</label>
-          <input type="number" id="interleaverBits" placeholder="Enter interleaver bits" />
+          <label for="payloadToOverheadRatio">Payload to Overhead Ratio (payload bits per overhead bit):</label>
+          <input type="number" step="0.01" id="payloadToOverheadRatio" placeholder="e.g., 5" />
         </div>
 
         <button type="button" onclick="calculate()">Calculate</button>
+        <button type="button" onclick="explainResults()" style="margin-top: 10px; background-color: #27ae60;">Explain Results</button>
       </form>
     </div>
 
-    <!-- Results -->
     <div class="card">
       <h2>Results</h2>
       <div id="resultContent"></div>
-      <p class="note">Click on the units to change them</p>
-      <div class="image-container">
-        <img id="resultImage" src="img1.jpg" alt="Result Illustration" />
-      </div>
     </div>
 
-    <!-- Back to home -->
     <div class="back-container">
       <a href="index.html" class="btn" style="max-width: 250px;">← Back to Home</a>
     </div>
   </div>
 
-  <!-- JavaScript file for calculations -->
   <script src="part1.js"></script>
 </body>
 </html>
