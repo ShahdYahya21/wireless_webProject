@@ -1,4 +1,3 @@
-/* Reset and Base */
 * {
   margin: 0;
   padding: 0;
@@ -6,23 +5,18 @@
 }
 
 body {
-  background-color: #f5f5f5;
   font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
   color: #333;
+  line-height: 1.6;
   padding: 20px;
 }
 
-/* Container */
 .container {
   max-width: 900px;
   margin: 0 auto;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 30px;
-  justify-content: center;
 }
 
-/* Header (shared) */
 .header {
   text-align: center;
   margin-bottom: 40px;
@@ -30,7 +24,6 @@ body {
   padding: 30px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  width: 100%;
 }
 
 .header h1 {
@@ -44,31 +37,21 @@ body {
   font-size: 1.1em;
 }
 
-/* Shared Card Style */
-.calculator, .results {
+.card {
   background: white;
   padding: 30px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  width: 100%;
-  max-width: 420px;
-  transition: transform 0.2s, box-shadow 0.2s;
+  margin-bottom: 30px;
 }
 
-.calculator:hover, .results:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-}
-
-/* Headings */
 h2 {
   color: #2c3e50;
   margin-bottom: 20px;
-  text-align: center;
   font-size: 1.8em;
+  text-align: center;
 }
 
-/* Inputs */
 .input-group {
   margin-bottom: 20px;
 }
@@ -80,13 +63,8 @@ label {
   color: #444;
 }
 
-.input-with-unit {
-  display: flex;
-  gap: 10px;
-}
-
 input, select {
-  flex: 1;
+  width: 100%;
   padding: 12px 15px;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -100,8 +78,7 @@ input:focus, select:focus {
   outline: none;
 }
 
-/* Button */
-button {
+button, .btn {
   width: 100%;
   padding: 12px;
   border: none;
@@ -112,71 +89,27 @@ button {
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s, transform 0.2s;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
 }
 
-button:hover {
+button:hover, .btn:hover {
   background-color: #2980b9;
   transform: translateY(-2px);
 }
 
-/* Results */
 .result-item {
-  cursor: pointer;
-  margin-top: 15px;
-  padding: 10px 15px;
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-  background-color: #ecf6fd;
-  border-radius: 8px;
-  transition: background-color 0.2s, box-shadow 0.2s;
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: #2c3e50;
 }
 
-.result-item:hover {
-  background-color: #d6ecfa;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+.result-value {
+  color: #d35400;
 }
 
-.result-item .answer {
-  color: #e74c3c;
-}
-
-.result-item::after {
-  content: " (click to change units)";
-  font-size: 0.9em;
-  color: #777;
-  margin-left: 10px;
-  font-style: italic;
-}
-
-.note {
-  font-size: 14px;
-  color: #666;
-  margin-top: 15px;
+.back-container {
   text-align: center;
-}
-
-/* Image */
-.image-container {
   margin-top: 30px;
-  text-align: center;
-}
-
-#resultImage {
-  max-width: 90%;
-  height: auto;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .container {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .header h1 {
-    font-size: 2em;
-  }
 }
