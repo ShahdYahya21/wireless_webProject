@@ -71,20 +71,43 @@ async function explainResults() {
     <p style="color: #3498db; font-style: italic;">Generating AI explanation...</p>
   `;
 
+  // Build prompt dynamically (you can customize this)
+  const prompt = `
+You are an expert in communication systems. Please explain clearly and professionally the meaning of the following wireless system calculation results for a student:
+
+Parameters:
+- Bandwidth: ${lastCalculation.parameters.bandwidth} Hz
+- Quantizer Bits: ${lastCalculation.parameters.quantizerBits}
+- Source Encoder Rate: ${lastCalculation.parameters.sourceEncoderRate}
+- Channel Encoder Rate: ${lastCalculation.parameters.channelEncoderRate}
+- Interleaver Bits: ${lastCalculation.parameters.interleaverBits}
+- Payload-to-Overhead Ratio: ${lastCalculation.parameters.payloadToOverheadRatio}
+
+Results:
+- Sampling Frequency: ${lastCalculation.results.samplingFrequency} samples/sec
+- Input Rate: ${lastCalculation.results.inputRate} bps
+- Source Encoder Output: ${lastCalculation.results.sourceEncoderOutput} bps
+- Channel Encoder Output: ${lastCalculation.results.channelEncoderOutput} bps
+- Interleaver Output: ${lastCalculation.results.interleaverOutput} bps
+- Burst Rate: ${lastCalculation.results.burstRate} bps
+
+Write a helpful and easy-to-understand explanation for a student.
+  `;
+
   try {
-     const response = await fetch('https://wireless-webproject.onrender.com/explain', {
+    const response = await fetch('https://wireless-webproject.onrender.com/explain', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(lastCalculation),
+      body: JSON.stringify({ prompt }), // Send only the prompt
     });
 
     const data = await response.json();
 
-    // Remove loading text
+    // Remove loading message
     const contentDiv = document.getElementById('resultContent');
     contentDiv.innerHTML = contentDiv.innerHTML.replace(/<p style="color: #3498db; font-style: italic;">.*?<\/p>/, '');
 
-    // Append explanation
+    // Show explanation
     contentDiv.innerHTML += `
       <div style="margin-top:20px; padding: 15px; background: #eaf4fb; border-radius: 8px;">
         <h3>AI Explanation:</h3>
