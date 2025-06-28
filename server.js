@@ -1,7 +1,9 @@
 import express from 'express';
 import cors from 'cors';
-import 'dotenv/config';
-import { GoogleGenerativeAI } from '@google/genai';
+import dotenv from 'dotenv';
+import GoogleGenerativeAI from '@google/generative-ai';
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -9,13 +11,15 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+// Initialize Gemini API
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
 app.post('/explain', async (req, res) => {
   const { parameters, results } = req.body;
 
   const prompt = `
-You are an expert in wireless communication systems. Explain these results clearly for a student:
+You are an expert in communication systems. Please explain clearly and professionally the meaning of the following wireless system calculation results for a student:
 
 Parameters:
 - Bandwidth: ${parameters.bandwidth} Hz
@@ -32,17 +36,21 @@ Results:
 - Channel Encoder Output: ${results.channelEncoderOutput} bps
 - Interleaver Output: ${results.interleaverOutput} bps
 - Burst Rate: ${results.burstRate} bps
-`;
+
+Write a helpful and easy-to-understand explanation for a student.
+  `;
 
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
+    const result = await model.generateContent({
+      contents: [{ parts: [{ text: prompt }] }],
+    });
 
-    res.json({ explanation: text });
-  } catch (error) {
-    console.error('Gemini API error:', error.message);
+    const response = await result.response;
+    const explanation = response.text();
+
+    res.json({ explanation });
+  } catch (err) {
+    console.error('Gemini API error:', err);
     res.status(500).json({ error: 'Failed to generate explanation.' });
   }
 });
