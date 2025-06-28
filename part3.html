@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Path Loss and Link Margin Calculator</title>
-  <link rel="stylesheet" href="part3.css" />
+  <link rel="stylesheet" href="part1.css" />
 </head>
 <body>
   <div class="container">
@@ -15,9 +15,7 @@
 
     <div class="card">
       <h2>Input Parameters</h2>
-      <div class="input-groups">
-        <!-- Reuse same structure for all inputs -->
-        <!-- Example below, repeat this block for all inputs -->
+      <form id="calcForm" onsubmit="return false;">
         <div class="input-group">
           <label for="receiveAmplifierGain">Receive Amplifier Gain (Ar):</label>
           <input type="number" id="receiveAmplifierGain" placeholder="0">
@@ -168,22 +166,17 @@
             <option value="1e-6">10^-6</option>
           </select>
         </div>
-      </div>
 
-      <button onclick="calculateLinkMargin()">Calculate</button>
+        <button type="button" onclick="calculateLinkMargin()">Calculate</button>
+        <button type="button" onclick="explainResults()" style="margin-top: 10px; background-color: #27ae60;">Explain Results</button>
+      </form>
     </div>
 
-    <!-- Results Section -->
     <div class="card">
       <h2>Results</h2>
       <div id="resultContent"></div>
-      <p class="note">Click on the units to change them</p>
-      <div class="image-container">
-        <img id="resultImage" src="img3.jpg" alt="Result Image" />
-      </div>
     </div>
 
-  <!-- Back to home -->
     <div class="back-container">
       <a href="index.html" class="btn" style="max-width: 250px;">← Back to Home</a>
     </div>
