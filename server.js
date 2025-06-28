@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import 'dotenv/config';
+import { OpenAI } from 'openai';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -7,18 +9,48 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-app.post('/explain', (req, res) => {
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+app.post('/explain', async (req, res) => {
   const { parameters, results } = req.body;
 
-  const explanation = `
-    The system uses a bandwidth of ${parameters.bandwidth} Hz, leading to a sampling frequency of ${results.samplingFrequency} samples/sec.
-    The quantizer creates an input bit rate of ${results.inputRate} bps.
-    After source and channel encoding, the rates change to ${results.sourceEncoderOutput} bps and ${results.channelEncoderOutput} bps.
-    With ${parameters.interleaverBits} interleaver bits, the interleaved output is ${results.interleaverOutput} bps.
-    Finally, burst formatting gives a transmission rate of ${results.burstRate} bps.
+  const prompt = `
+You are an expert in communication systems. Please explain clearly and professionally the meaning of the following wireless system calculation results for a student:
+
+Parameters:
+- Bandwidth: ${parameters.bandwidth} Hz
+- Quantizer Bits: ${parameters.quantizerBits}
+- Source Encoder Rate: ${parameters.sourceEncoderRate}
+- Channel Encoder Rate: ${parameters.channelEncoderRate}
+- Interleaver Bits: ${parameters.interleaverBits}
+- Payload-to-Overhead Ratio: ${parameters.payloadToOverheadRatio}
+
+Results:
+- Sampling Frequency: ${results.samplingFrequency} samples/sec
+- Input Rate: ${results.inputRate} bps
+- Source Encoder Output: ${results.sourceEncoderOutput} bps
+- Channel Encoder Output: ${results.channelEncoderOutput} bps
+- Interleaver Output: ${results.interleaverOutput || 'N/A'} bps
+- Burst Rate: ${results.burstRate} bps
+
+Write a clear explanation.
   `;
 
-  res.json({ explanation });
+  try {
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-3.5-turbo', 
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    const explanation = completion.choices[0].message.content;
+
+    res.json({ explanation });
+  } catch (err) {
+    console.error('OpenAI API error:', err.message);
+    res.status(500).json({ error: 'Failed to generate explanation.' });
+  }
 });
 
 app.listen(PORT, () => {
