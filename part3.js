@@ -150,9 +150,22 @@ function calculateLinkMargin() {
 
    const pt = linkMargin - transmitGain - receiveGain - transmitAmplifierGain - receiveAmplifierGain
     + pathLoss +feederLoss + otherLosses + fadeMargin + kindb + noiseTemperatureDb + noiseFigure +ebN0Db + rateindb;
+
+   const pr = pt
+         - pathLoss
+         - feederLoss
+         - otherLosses
+         - fadeMargin;
+
     // Display results
-    document.getElementById('resultContent').innerHTML = `
-        <p>Power transmitted (Pt): <span class="result-value" onclick="toggleUnits(this)" data-unit="dB">${pt.toFixed(2)} dB</span></p>`;
+  document.getElementById('resultContent').innerHTML = `
+  <p>Power transmitted (Pt): 
+    <span class="result-value" onclick="toggleUnits(this)" data-unit="dB">${pt.toFixed(2)} dB</span>
+  </p>
+  <p>Power received (Pr): 
+    <span class="result-value" onclick="toggleUnits(this)" data-unit="dB">${pr.toFixed(2)} dB</span>
+  </p>
+`;
 }
 
 function toggleUnits(element) {
