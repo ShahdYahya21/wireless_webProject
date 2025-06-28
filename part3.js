@@ -42,8 +42,7 @@ function calculateLinkMargin() {
     let linkMargin = parseFloat(document.getElementById('linkMargin').value) || 0;
     const linkMarginUnit = document.getElementById('linkMarginUnit').value;
 
-    const modulationType = document.getElementById('modulationType').value;
-    const bitErrorRate = parseFloat(document.getElementById('bitErrorRate').value);
+    const EbN0 = parseFloat(document.getElementById('EbN0').value); // Eb/N0 in dB
 
     // Function to convert to dB
     function toDb(value, unit) {
@@ -73,134 +72,107 @@ function calculateLinkMargin() {
         pathLoss = 10 * Math.log10((4 * Math.PI * frequency * distance)**2 / (c**2));
     }
 
-    // Calculate EB/N0 in dB
-    let ebN0 = 0;
+    // Constants for the calculations
+    const k = 1.38 * 10**-23; // Boltzmann constant in J/K
+    const totalNoise = noiseTemperature * k; // Total noise value
 
-    if (modulationType === '8-PSK') {
-        switch(bitErrorRate) {
-            case 1e-4:
-                ebN0 = 12;
-                break;
-            case 1e-6:
-                ebN0 = 14;
-                break;
-            case 1e-2:
-                ebN0 = 7;
-                break;
-            case 1e-5:
-                ebN0 = 13;
-                break;
-            case 1e-3:
-                ebN0 = 10;
-                break;
-        }
-    } else if (modulationType === 'BPSK' || modulationType === 'QPSK') {
-        switch(bitErrorRate) {
-            case 1e-4:
-                ebN0 = 8;
-                break;
-            case 1e-6:
-                ebN0 = 10.5;
-                break;
-            case 1e-2:
-                ebN0 = 4;
-                break;
-            case 1e-5:
-                ebN0 = 9.8;
-                break;
-            case 1e-3:
-                ebN0 = 7;
-                break;
-        }
-    } else if (modulationType === '16-PSK') {
-        switch(bitErrorRate) {
-            case 1e-4:
-                ebN0 = 16;
-                break;
-            case 1e-6:
-                ebN0 = 18;
-                break;
-            case 1e-2:
-                ebN0 = 11;
-                break;
-            case 1e-5:
-                ebN0 = 17;
-                break;
-            case 1e-3:
-                ebN0 = 14;
-                break;
-        }
-    }
+    // Calculate Pr using the provided formula
+    const pr = (transmitGain * receiveGain * transmitAmplifierGain * receiveAmplifierGain * pathLoss) /
+        (feederLoss * otherLosses * fadeMargin * EbN0);
 
-
-    const kindb = 10 * Math.log10(1.38 * 10**-23); // Boltzmann constant in dB
-    const noiseTemperatureDb = 10 * Math.log10(noiseTemperature); // Convert noise temperature to dB
-    const ebN0Db = ebN0; //  in dB
-
-      // Calculate data rate in dB
-    let rateindb;
-    if (dataRateUnit === 'Kbps') {
-        rateindb = 10 * Math.log10(dataRate * 1000);
-    } else if (dataRateUnit === 'Mbps') {
-        rateindb = 10 * Math.log10(dataRate * 1000000);
-    } else {
-        rateindb = 10 * Math.log10(dataRate);
-    }
-
-
-   const pt = linkMargin - transmitGain - receiveGain - transmitAmplifierGain - receiveAmplifierGain
-    + pathLoss +feederLoss + otherLosses + fadeMargin + kindb + noiseTemperatureDb + noiseFigure +ebN0Db + rateindb;
-
-   const pr = pt
-         - pathLoss
-         - feederLoss
-         - otherLosses
-         - fadeMargin;
+    // Calculate Pt using the provided formula
+    const pt = pr * (k * totalNoise * EbN0); // Eq. for Pt using Eb/N0 and Pr
 
     // Display results
-  document.getElementById('resultContent').innerHTML = `
-  <p>Power transmitted (Pt): 
-    <span class="result-value" onclick="toggleUnits(this)" data-unit="dB">${pt.toFixed(2)} dB</span>
-  </p>
-  <p>Power received (Pr): 
-    <span class="result-value" onclick="toggleUnits(this)" data-unit="dB">${pr.toFixed(2)} dB</span>
-  </p>
-`;
+    document.getElementById('resultContent').innerHTML = `
+        <p><strong>Power Transmitted (Pt):</strong> <span class="result-value">${pt.toFixed(2)} dB</span></p>
+        <p><strong>Power Received (Pr):</strong> <span class="result-value">${pr.toFixed(2)} dB</span></p>
+      
+    `;
+    window.lastLinkMarginCalculation = {
+  parameters: {
+    frequency, frequencyUnit,
+    distance,
+    dataRate, dataRateUnit,
+    pathLoss, pathLossUnit,
+    transmitGain, transmitGainUnit,
+    receiveGain, receiveGainUnit,
+    transmitAmplifierGain, transmitAmplifierGainUnit,
+    receiveAmplifierGain, receiveAmplifierGainUnit,
+    feederLoss, feederLossUnit,
+    otherLosses, otherLossesUnit,
+    fadeMargin, fadeMarginUnit,
+    noiseFigure, noiseFigureUnit,
+    noiseTemperature,
+    EbN0
+  },
+  results: {
+    Pt: pt,
+    Pr: pr
+  }
+};
+
 }
 
-function toggleUnits(element) {
-    const value = parseFloat(element.innerText);
-    const unit = element.getAttribute('data-unit');
+async function explainLinkMarginResults() {
+  if (!window.lastLinkMarginCalculation) {
+    alert('Please perform a calculation first!');
+    return;
+  }
 
-    let newValue, newUnit;
+  document.getElementById('resultContent').innerHTML += `
+    <p style="color: #3498db; font-style: italic;">Generating AI explanation...</p>
+  `;
 
-    if (unit === 'dB') {
-        // Convert dB to W
-        if (value <= 0) {
-            newValue = 10 ** (value / 10);
-        } else {
-            newValue = Math.pow(10, value / 10);
-        }
-        newUnit = 'W';
-    } else if (unit === 'W') {
-        // Convert W to dBm
-        if (value <= 0) {
-            newValue = value + 30;
-        } else {
-            newValue = 10 * Math.log10(value * 1000); // Convert W to mW and then to dBm
-        }
-        newUnit = 'dBm';
-    } else if (unit === 'dBm') {
-        // Convert dBm to dB
-        newValue = value - 30;
-        newUnit = 'dB';
-    }
+  const p = lastLinkMarginCalculation.parameters;
+  const r = lastLinkMarginCalculation.results;
 
-    // Handle precision and edge cases
-    if (isNaN(newValue) || !isFinite(newValue)) {
-        newValue = 0;
-    }
+  const prompt = `
+You are a wireless communication engineer. Please provide a detailed, clear explanation for a student about the link margin and power calculation results below.
 
-    element.innerText = `${newValue.toFixed(2)} ${newUnit}`;
-    element.setAttribute('data-unit', newUnit);
+Parameters:
+- Frequency: ${p.frequency} ${p.frequencyUnit}
+- Distance: ${p.distance} meters
+- Data Rate: ${p.dataRate} ${p.dataRateUnit}
+- Path Loss: ${p.pathLoss} ${p.pathLossUnit}
+- Transmit Antenna Gain: ${p.transmitGain} ${p.transmitGainUnit}
+- Receive Antenna Gain: ${p.receiveGain} ${p.receiveGainUnit}
+- Transmit Amplifier Gain: ${p.transmitAmplifierGain} ${p.transmitAmplifierGainUnit}
+- Receive Amplifier Gain: ${p.receiveAmplifierGain} ${p.receiveAmplifierGainUnit}
+- Feeder Loss: ${p.feederLoss} ${p.feederLossUnit}
+- Other Losses: ${p.otherLosses} ${p.otherLossesUnit}
+- Fade Margin: ${p.fadeMargin} ${p.fadeMarginUnit}
+- Noise Figure: ${p.noiseFigure} ${p.noiseFigureUnit}
+- Noise Temperature: ${p.noiseTemperature} K
+- Eb/N0: ${p.EbN0} dB
+
+Results:
+- Received Power (Pr): ${r.Pr.toFixed(2)} dB
+- Transmitted Power (Pt): ${r.Pt.toFixed(2)} dB
+
+Please explain what these values represent, how they are derived, and how they affect wireless system design. Keep it accessible for engineering students.
+`;
+
+  try {
+    const response = await fetch('https://wireless-webproject.onrender.com/explain', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    });
+
+    const data = await response.json();
+
+    const contentDiv = document.getElementById('resultContent');
+    contentDiv.innerHTML = contentDiv.innerHTML.replace(/<p style="color: #3498db; font-style: italic;">.*?<\/p>/, '');
+
+    contentDiv.innerHTML += `
+      <div style="margin-top:20px; padding: 15px; background: #eaf4fb; border-radius: 8px;">
+        <h3>AI Explanation:</h3>
+        <p>${data.explanation.replace(/\n/g, '<br>')}</p>
+      </div>
+    `;
+  } catch (error) {
+    alert('Failed to get AI explanation. See console for details.');
+    console.error(error);
+  }
 }
