@@ -11,16 +11,12 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Initialize Gemini API
+// Gemini setup
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
 app.post('/explain', async (req, res) => {
-  const { prompt } = req.body; // ✅ expect `prompt` directly
-
-  if (!prompt || prompt.trim().length === 0) {
-    return res.status(400).json({ error: 'Prompt is required.' });
-  }
+  const { prompt } = req.body;
 
   try {
     const result = await model.generateContent({
