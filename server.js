@@ -1,17 +1,16 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { GoogleGenerativeAI } from '@google/generative-ai'; // ✅ CORRECT
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000; // ✅ Important: use process.env.PORT
 
 app.use(cors());
 app.use(express.json());
 
-// Initialize Gemini API
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
@@ -31,4 +30,8 @@ app.post('/explain', async (req, res) => {
     console.error('Gemini API error:', err);
     res.status(500).json({ error: 'Failed to generate explanation.' });
   }
+});
+
+app.listen(PORT, () => {
+  console.log(`✅ Server running on port ${PORT}`);
 });
