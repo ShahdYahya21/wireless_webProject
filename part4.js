@@ -159,6 +159,7 @@ function calculateCellularSystemDesign() {
         <p>Minimum Number of Carriers Needed (in the whole system ): <span class="result-value">${totalNumCarriers} carriers</span></p>
         <p>Minimum Number of Carriers Needed if the GOS is changed to 5%: <span class="result-value">${totalNumCarriersafterGos} carriers</span></p>
     `;
+
     window.lastCellularCalculation = {
   parameters: {
     slotsPerCarrier,
