@@ -83,7 +83,7 @@
 
         <div class="input-group">
           <label for="pathLossComponent">Path Loss Component</label>
-          <input type="number" id="pathLossComponent" required />
+          <input type="number" id="pathLossComponent" step="0.1" required />
         </div>
 
         <div class="input-group">
@@ -99,6 +99,7 @@
         </div>
 
         <button type="submit">Calculate</button>
+        <button type="button" onclick="explainCellularResults()" style="margin-top: 10px; background-color: #27ae60;">Explain Results</button>
       </form>
     </div>
 
@@ -107,12 +108,10 @@
       <div id="resultContent"></div>
     </div>
 
-    <!-- Back to home -->
     <div class="back-container">
-      <a href="index.html" class="btn" style="max-width: 250px;">← Back to Home</a>
+      <a href="index.html" class="btn" style="max-width: 250px;">&larr; Back to Home</a>
     </div>
   </div>
-
 
   <script src="part4.js"></script>
 </body>
