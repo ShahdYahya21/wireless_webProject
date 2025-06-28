@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Path Loss and Link Margin Calculator</title>
-  <link rel="stylesheet" href="part1.css" />
+  <link rel="stylesheet" href="part3.css" />
 </head>
 <body>
   <div class="container">
@@ -15,7 +15,8 @@
 
     <div class="card">
       <h2>Input Parameters</h2>
-      <form id="calcForm" onsubmit="return false;">
+      <form id="pathLossForm" onsubmit="calculateLinkMargin(); return false;">
+        <!-- Input fields for parameters -->
         <div class="input-group">
           <label for="receiveAmplifierGain">Receive Amplifier Gain (Ar):</label>
           <input type="number" id="receiveAmplifierGain" placeholder="0">
@@ -147,36 +148,23 @@
         </div>
 
         <div class="input-group">
-          <label for="modulationType">Modulation Type:</label>
-          <select id="modulationType">
-            <option value="8-PSK">8-PSK</option>
-            <option value="16-PSK">16-PSK</option>
-            <option value="BPSK">BPSK</option>
-            <option value="QPSK">QPSK</option>
-          </select>
+          <label for="EbN0">Eb/N0 (dB):</label>
+          <input type="number" id="EbN0" placeholder="0">
         </div>
 
-        <div class="input-group">
-          <label for="bitErrorRate">Maximum Bit Error Rate (BER):</label>
-          <select id="bitErrorRate">
-            <option value="1e-2">10^-2</option>
-            <option value="1e-3">10^-3</option>
-            <option value="1e-4">10^-4</option>
-            <option value="1e-5">10^-5</option>
-            <option value="1e-6">10^-6</option>
-          </select>
-        </div>
-
-        <button type="button" onclick="calculateLinkMargin()">Calculate</button>
-        <button type="button" onclick="explainResults()" style="margin-top: 10px; background-color: #27ae60;">Explain Results</button>
+         <button type="button" onclick="calculateLinkMargin()">Calculate</button>
+        <button type="button" onclick="calculateLinkMargin()" style="margin-top: 10px; background-color: #27ae60;">Explain Results</button>
       </form>
     </div>
 
     <div class="card">
       <h2>Results</h2>
-      <div id="resultContent"></div>
+      <div id="resultContent">
+        <!-- Calculation results will appear here -->
+      </div>
     </div>
 
+    <!-- Back to home -->
     <div class="back-container">
       <a href="index.html" class="btn" style="max-width: 250px;">← Back to Home</a>
     </div>
