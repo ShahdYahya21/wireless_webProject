@@ -2,10 +2,15 @@ function calculateLinkMargin() {
   const k = 1.38e-23; // Boltzmann constant in J/K
   const c = 3e8; // Speed of light in m/s
 
-  // Helper to check if a value is a valid number
-  function isValid(value) {
-    return value !== null && !isNaN(value);
-  }
+ function isPositive(value) {
+  return isValid(value) && value > 0;
+}
+function isNonNegative(value) {
+  return isValid(value) && value >= 0;
+}
+function isValid(value) {
+  return value !== null && !isNaN(value);
+}
 
   // Get input values
   const noiseTemperature = parseFloat(document.getElementById('noiseTemperature').value);
@@ -21,26 +26,36 @@ function calculateLinkMargin() {
   const receiveAmplifierGain = parseFloat(document.getElementById('receiveAmplifierGain').value);
   let pathLoss = parseFloat(document.getElementById('pathLoss').value);
 
-  // Prompt if required fields are missing
-  if (!isValid(noiseTemperature) || !isValid(noiseFigure) || !isValid(EbN0) ||
-      !isValid(feederLoss) || !isValid(otherLosses) || !isValid(fadeMargin) ||
-      !isValid(systemMargin) || !isValid(transmitGain) || !isValid(receiveGain) ||
-      !isValid(transmitAmplifierGain) || !isValid(receiveAmplifierGain)) {
-    alert("Please fill in all required input fields.");
+if (
+  !isPositive(noiseTemperature) ||
+  !isNonNegative(noiseFigure) ||
+  !isNonNegative(EbN0) ||
+  !isNonNegative(feederLoss) ||
+  !isNonNegative(otherLosses) ||
+  !isNonNegative(fadeMargin) ||
+  !isNonNegative(systemMargin) ||
+  !isNonNegative(transmitGain) ||
+  !isNonNegative(receiveGain) ||
+  !isNonNegative(transmitAmplifierGain) ||
+  !isNonNegative(receiveAmplifierGain)
+) {
+  alert("Please fill in all required input fields with valid numbers. Temperature must be > 0. All other values must be ≥ 0.");
+  return;
+}
+
+
+if (!isValid(pathLoss)) {
+  const frequency = parseFloat(document.getElementById('frequency').value);
+  const distance = parseFloat(document.getElementById('distance').value);
+
+  if (!isPositive(frequency) || !isPositive(distance)) {
+    alert("Please provide either the path loss, or both frequency and distance (both must be > 0) to calculate it.");
     return;
   }
 
-  // If pathLoss is not provided, calculate using frequency and distance
-  if (!isValid(pathLoss)) {
-    const frequency = parseFloat(document.getElementById('frequency').value);
-    const distance = parseFloat(document.getElementById('distance').value);
+  pathLoss = 20 * Math.log10((4 * Math.PI * frequency * distance) / c); // Free space path loss
+}
 
-    if (!isValid(frequency) || !isValid(distance)) {
-      alert("Please provide either the path loss or both frequency and distance to calculate it.");
-      return;
-    }
-    pathLoss = 20 * Math.log10((4 * Math.PI * frequency * distance) / c); // Free space path loss
-  }
 
   // Step 1: Convert T and k to dB
   const k_dB = 10 * Math.log10(k); // Boltzmann constant in dB
