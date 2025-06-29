@@ -8,15 +8,15 @@ function calculate() {
   const interleaverBits = parseFloat(document.getElementById('interleaverBits').value);
   const payloadToOverheadRatio = parseFloat(document.getElementById('payloadToOverheadRatio').value);
 
-  if (
-    isNaN(bandwidth) ||
-    isNaN(quantizerBits) ||
-    isNaN(sourceEncoderRate) ||
-    isNaN(channelEncoderRate) ||
-    isNaN(interleaverBits) ||
-    isNaN(payloadToOverheadRatio) ||
-    payloadToOverheadRatio <= 0
-  ) {
+ if (
+  isNaN(bandwidth) || bandwidth <= 0 ||
+  isNaN(quantizerBits) || quantizerBits <= 0 ||
+  isNaN(sourceEncoderRate) || sourceEncoderRate <= 0 || sourceEncoderRate > 1 ||
+  isNaN(channelEncoderRate) || channelEncoderRate <= 0 || channelEncoderRate > 1 ||
+  isNaN(interleaverBits) || interleaverBits < 0 ||
+  isNaN(payloadToOverheadRatio) || payloadToOverheadRatio <= 0
+)
+ {
     document.getElementById('resultContent').innerHTML =
       "<p class='result-item'><span class='result-value'>Please fill in all fields with valid positive numbers.</span></p>";
     lastCalculation = null;
