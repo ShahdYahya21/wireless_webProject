@@ -94,33 +94,31 @@ async function explainLinkMarginResults() {
     <p style="color: #3498db; font-style: italic;">Generating AI explanation...</p>
   `;
 
-  const p = lastLinkMarginCalculation.parameters;
-  const r = lastLinkMarginCalculation.results;
+  const p = window.lastLinkMarginCalculation.inputs;
+  const r = window.lastLinkMarginCalculation.results;
 
   const prompt = `
-You are a wireless communication engineer. Please provide a detailed, clear explanation for a student about the link margin and power calculation results below.
+You are a wireless communication engineer. Please explain clearly and thoroughly the following link margin calculation to a student:
 
-Parameters:
-- Frequency: ${p.frequency} ${p.frequencyUnit}
-- Distance: ${p.distance} meters
-- Data Rate: ${p.dataRate} ${p.dataRateUnit}
-- Path Loss: ${p.pathLoss} ${p.pathLossUnit}
-- Transmit Antenna Gain: ${p.transmitGain} ${p.transmitGainUnit}
-- Receive Antenna Gain: ${p.receiveGain} ${p.receiveGainUnit}
-- Transmit Amplifier Gain: ${p.transmitAmplifierGain} ${p.transmitAmplifierGainUnit}
-- Receive Amplifier Gain: ${p.receiveAmplifierGain} ${p.receiveAmplifierGainUnit}
-- Feeder Loss: ${p.feederLoss} ${p.feederLossUnit}
-- Other Losses: ${p.otherLosses} ${p.otherLossesUnit}
-- Fade Margin: ${p.fadeMargin} ${p.fadeMarginUnit}
-- Noise Figure: ${p.noiseFigure} ${p.noiseFigureUnit}
+Inputs:
+- Path Loss: ${p.pathLoss} dB
+- Transmit Antenna Gain: ${p.transmitGain} dB
+- Receive Antenna Gain: ${p.receiveGain} dB
+- Transmit Amplifier Gain: ${p.transmitAmplifierGain} dB
+- Receive Amplifier Gain: ${p.receiveAmplifierGain} dB
+- Feeder Loss: ${p.feederLoss} dB
+- Other Losses: ${p.otherLosses} dB
+- Fade Margin: ${p.fadeMargin} dB
+- Noise Figure: ${p.noiseFigure} dB
 - Noise Temperature: ${p.noiseTemperature} K
 - Eb/N0: ${p.EbN0} dB
+- System Margin: ${p.systemMargin} dB
 
 Results:
 - Received Power (Pr): ${r.Pr.toFixed(2)} dB
 - Transmitted Power (Pt): ${r.Pt.toFixed(2)} dB
 
-Please explain what these values represent, how they are derived, and how they affect wireless system design. Keep it accessible for engineering students.
+Please explain what these parameters mean, how the Pr and Pt were calculated, and their role in designing a wireless communication link. Keep it beginner-friendly but technically accurate.
 `;
 
   try {
