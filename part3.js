@@ -1,118 +1,88 @@
 function calculateLinkMargin() {
-    const c = 3 * 10**8; // Speed of light
+  const k = 1.38e-23; // Boltzmann constant in J/K
+  const c = 3e8; // Speed of light in m/s
 
-    // Get input values
-    let pathLoss = parseFloat(document.getElementById('pathLoss').value) || 0;
-    const pathLossUnit = document.getElementById('pathLossUnit').value;
-
-    let frequency = parseFloat(document.getElementById('frequency').value);
-    const frequencyUnit = document.getElementById('frequencyUnit').value;
-
-    const distance = parseFloat(document.getElementById('distance').value) || 0;
-
-    let dataRate = parseFloat(document.getElementById('dataRate').value) || 1 ;
-    const dataRateUnit = document.getElementById('dataRateUnit').value;
-
-    let transmitGain = parseFloat(document.getElementById('transmitGain').value) || 0;
-    const transmitGainUnit = document.getElementById('transmitGainUnit').value;
-
-    let receiveGain = parseFloat(document.getElementById('receiveGain').value) || 0;
-    const receiveGainUnit = document.getElementById('receiveGainUnit').value;
-
-    let transmitAmplifierGain = parseFloat(document.getElementById('transmitAmplifierGain').value) || 0;
-    const transmitAmplifierGainUnit = document.getElementById('transmitAmplifierGainUnit').value;
-
-    let receiveAmplifierGain = parseFloat(document.getElementById('receiveAmplifierGain').value) || 0;
-    const receiveAmplifierGainUnit = document.getElementById('receiveAmplifierGainUnit').value;
-
-    let feederLoss = parseFloat(document.getElementById('feederLoss').value) || 0;
-    const feederLossUnit = document.getElementById('feederLossUnit').value;
-
-    let otherLosses = parseFloat(document.getElementById('otherLosses').value) || 0;
-    const otherLossesUnit = document.getElementById('otherLossesUnit').value;
-
-    let fadeMargin = parseFloat(document.getElementById('fadeMargin').value) || 0;
-    const fadeMarginUnit = document.getElementById('fadeMarginUnit').value;
-
-    let noiseFigure = parseFloat(document.getElementById('noiseFigure').value) || 0;
-    const noiseFigureUnit = document.getElementById('noiseFigureUnit').value;
-
-    const noiseTemperature = parseFloat(document.getElementById('noiseTemperature').value) || 1;
-
-    let linkMargin = parseFloat(document.getElementById('linkMargin').value) || 0;
-    const linkMarginUnit = document.getElementById('linkMarginUnit').value;
-
-    const EbN0 = parseFloat(document.getElementById('EbN0').value); // Eb/N0 in dB
-
-    // Function to convert to dB
-    function toDb(value, unit) {
-        if (unit === 'Unitless') {
-            return 10 * Math.log10(value);
-        } else if (unit === 'dBm') {
-            return value - 30;
-        } else {
-            return value; // Already in dB
-        }
-    }
-
-    // Convert all inputs to dB
-    pathLoss = toDb(pathLoss, pathLossUnit);
-    transmitGain = toDb(transmitGain, transmitGainUnit);
-    receiveGain = toDb(receiveGain, receiveGainUnit);
-    transmitAmplifierGain = toDb(transmitAmplifierGain, transmitAmplifierGainUnit);
-    receiveAmplifierGain = toDb(receiveAmplifierGain, receiveAmplifierGainUnit);
-    feederLoss = toDb(feederLoss, feederLossUnit);
-    otherLosses = toDb(otherLosses, otherLossesUnit);
-    fadeMargin = toDb(fadeMargin, fadeMarginUnit);
-    noiseFigure = toDb(noiseFigure, noiseFigureUnit);
-    linkMargin = toDb(linkMargin, linkMarginUnit);
-
-    // Calculate path loss if not given
-    if (!pathLoss && frequency && distance) {
-        pathLoss = 10 * Math.log10((4 * Math.PI * frequency * distance)**2 / (c**2));
-    }
-
-    // Constants for the calculations
-    const k = 1.38 * 10**-23; // Boltzmann constant in J/K
-    const totalNoise = noiseTemperature * k; // Total noise value
-
-    // Calculate Pr using the provided formula
-    const pr = (transmitGain * receiveGain * transmitAmplifierGain * receiveAmplifierGain * pathLoss) /
-        (feederLoss * otherLosses * fadeMargin * EbN0);
-
-    // Calculate Pt using the provided formula
-    const pt = pr * (k * totalNoise * EbN0); // Eq. for Pt using Eb/N0 and Pr
-
-    // Display results
-    document.getElementById('resultContent').innerHTML = `
-        <p><strong>Power Transmitted (Pt):</strong> <span class="result-value">${pt.toFixed(2)} dB</span></p>
-        <p><strong>Power Received (Pr):</strong> <span class="result-value">${pr.toFixed(2)} dB</span></p>
-      
-    `;
-    window.lastLinkMarginCalculation = {
-  parameters: {
-    frequency, frequencyUnit,
-    distance,
-    dataRate, dataRateUnit,
-    pathLoss, pathLossUnit,
-    transmitGain, transmitGainUnit,
-    receiveGain, receiveGainUnit,
-    transmitAmplifierGain, transmitAmplifierGainUnit,
-    receiveAmplifierGain, receiveAmplifierGainUnit,
-    feederLoss, feederLossUnit,
-    otherLosses, otherLossesUnit,
-    fadeMargin, fadeMarginUnit,
-    noiseFigure, noiseFigureUnit,
-    noiseTemperature,
-    EbN0
-  },
-  results: {
-    Pt: pt,
-    Pr: pr
+  // Helper to check if a value is a valid number
+  function isValid(value) {
+    return value !== null && !isNaN(value);
   }
-};
 
+  // Get input values
+  const noiseTemperature = parseFloat(document.getElementById('noiseTemperature').value);
+  const noiseFigure = parseFloat(document.getElementById('noiseFigure').value);
+  const EbN0 = parseFloat(document.getElementById('EbN0').value);
+  const feederLoss = parseFloat(document.getElementById('feederLoss').value);
+  const otherLosses = parseFloat(document.getElementById('otherLosses').value);
+  const fadeMargin = parseFloat(document.getElementById('fadeMargin').value);
+  const systemMargin = parseFloat(document.getElementById('linkMargin').value);
+  const transmitGain = parseFloat(document.getElementById('transmitGain').value);
+  const receiveGain = parseFloat(document.getElementById('receiveGain').value);
+  const transmitAmplifierGain = parseFloat(document.getElementById('transmitAmplifierGain').value);
+  const receiveAmplifierGain = parseFloat(document.getElementById('receiveAmplifierGain').value);
+  let pathLoss = parseFloat(document.getElementById('pathLoss').value);
+
+  // Prompt if required fields are missing
+  if (!isValid(noiseTemperature) || !isValid(noiseFigure) || !isValid(EbN0) ||
+      !isValid(feederLoss) || !isValid(otherLosses) || !isValid(fadeMargin) ||
+      !isValid(systemMargin) || !isValid(transmitGain) || !isValid(receiveGain) ||
+      !isValid(transmitAmplifierGain) || !isValid(receiveAmplifierGain)) {
+    alert("Please fill in all required input fields.");
+    return;
+  }
+
+  // If pathLoss is not provided, calculate using frequency and distance
+  if (!isValid(pathLoss)) {
+    const frequency = parseFloat(document.getElementById('frequency').value);
+    const distance = parseFloat(document.getElementById('distance').value);
+
+    if (!isValid(frequency) || !isValid(distance)) {
+      alert("Please provide either the path loss or both frequency and distance to calculate it.");
+      return;
+    }
+    pathLoss = 20 * Math.log10((4 * Math.PI * frequency * distance) / c); // Free space path loss
+  }
+
+  // Step 1: Convert T and k to dB
+  const k_dB = 10 * Math.log10(k); // Boltzmann constant in dB
+  const T_dB = 10 * Math.log10(noiseTemperature); // Noise temperature in dB
+
+  // Step 2: Calculate Pr
+  const Pr = systemMargin + k_dB + T_dB + noiseFigure + EbN0;
+
+  // Step 3: Calculate Pt
+  const Pt = Pr + pathLoss + feederLoss + otherLosses + fadeMargin
+                  - transmitGain - receiveGain - transmitAmplifierGain - receiveAmplifierGain;
+
+  // Display results
+  document.getElementById('resultContent').innerHTML = `
+      <p><strong>Power Transmitted (Pt):</strong> <span class="result-value">${Pt.toFixed(2)} dB</span></p>
+      <p><strong>Power Received (Pr):</strong> <span class="result-value">${Pr.toFixed(2)} dB</span></p>
+  `;
+
+  // Save for explanation feature
+  window.lastLinkMarginCalculation = {
+    inputs: {
+      pathLoss,
+      transmitGain,
+      receiveGain,
+      transmitAmplifierGain,
+      receiveAmplifierGain,
+      feederLoss,
+      otherLosses,
+      fadeMargin,
+      noiseFigure,
+      noiseTemperature,
+      EbN0,
+      systemMargin,
+    },
+    results: {
+      Pr,
+      Pt,
+    }
+  };
 }
+
+
 
 async function explainLinkMarginResults() {
   if (!window.lastLinkMarginCalculation) {
