@@ -10,13 +10,17 @@ function calculateLTE() {
     const parallelRB = parseInt(document.getElementById('parallelRB').value);
     const qamType = parseInt(document.getElementById('qamType').value);
 
-    if (
-        isNaN(rbBandwidth) || isNaN(subCarrierSpacing) || isNaN(ofdmSymbolsPerRB) ||
-        isNaN(rbDuration) || isNaN(parallelRB) || isNaN(qamType)
-    ) {
-        alert('Please fill all inputs with valid numbers.');
-        return;
-    }
+  if (
+    isNaN(rbBandwidth) || rbBandwidth <= 0 ||
+    isNaN(subCarrierSpacing) || subCarrierSpacing <= 0 ||
+    isNaN(ofdmSymbolsPerRB) || ofdmSymbolsPerRB <= 0 ||
+    isNaN(rbDuration) || rbDuration <= 0 ||
+    isNaN(parallelRB) || parallelRB <= 0 ||
+    isNaN(qamType) || qamType <= 0
+) {
+    alert('All values must be valid positive numbers.');
+    return;
+}
 
     const rbBandwidthHz = convertToHz(rbBandwidth, rbBandwidthUnit);
     const subCarrierSpacingHz = convertToHz(subCarrierSpacing, subCarrierSpacingUnit);
